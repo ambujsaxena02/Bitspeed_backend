@@ -4,7 +4,7 @@ import Database from "better-sqlite3";
 import path from "path";
 
 const app = express();
-const PORT = 8080;
+const PORT = Number(process.env.PORT) || 8080;
 
 app.use(express.json());
 

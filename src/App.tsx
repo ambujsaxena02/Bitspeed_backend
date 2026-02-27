@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { motion } from "motion/react";
-import { User, Phone, Mail, Search, History, Database as DbIcon, AlertCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { User, Phone, Mail, Search, History, Database as DbIcon, AlertCircle, Cpu, Link as LinkIcon } from "lucide-react";
 
 interface ReconciliationResponse {
   contact: {
@@ -27,13 +27,8 @@ export default function App() {
     try {
       const response = await fetch("/identify", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email || null,
-          phoneNumber: phoneNumber || null,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email || null, phoneNumber: phoneNumber || null }),
       });
 
       if (!response.ok) {
@@ -51,150 +46,155 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F0] text-[#141414] font-sans p-6 md:p-12">
-      <div className="max-w-4xl mx-auto">
-        <header className="mb-12 border-b border-[#141414]/10 pb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <DbIcon className="w-8 h-8 text-[#5A5A40]" />
-            <h1 className="text-4xl font-serif italic font-medium tracking-tight">FluxKart Identity</h1>
+    <div className="min-h-screen bg-[#0A0A0B] text-white font-sans selection:bg-[#C1FF72] selection:text-black">
+      {/* Animated Background Gradients */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#C1FF72]/10 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-blue-500/10 blur-[120px] rounded-full" />
+      </div>
+
+      <div className="relative z-10 max-w-5xl mx-auto p-6 md:p-12">
+        <header className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-[#C1FF72] rounded-lg">
+                <Cpu className="w-6 h-6 text-black" />
+              </div>
+              <h1 className="text-3xl font-serif italic font-bold tracking-tight text-[#C1FF72]">FluxKart.OS</h1>
+            </div>
+            <p className="text-white/50 max-w-md text-sm leading-relaxed">
+              Advanced Identity Reconciliation Engine. Consolidating fragmented customer touchpoints into a unified neural profile.
+            </p>
           </div>
-          <p className="text-[#141414]/60 max-w-xl">
-            Identity Reconciliation Service for Bitespeed. Link customer contact points across multiple purchases.
-          </p>
+          <div className="flex gap-4 text-[10px] uppercase tracking-widest font-bold text-white/30">
+            <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" /> System Online</span>
+            <span>v2.0.26</span>
+          </div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Form Section */}
-          <section>
-            <h2 className="text-xs uppercase tracking-widest font-semibold text-[#141414]/40 mb-6 flex items-center gap-2">
-              <Search className="w-3 h-3" /> Identify Request
-            </h2>
-            <form onSubmit={handleIdentify} className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-sm font-medium flex items-center gap-2">
-                  <Mail className="w-4 h-4 opacity-40" /> Email Address
-                </label>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Input Panel */}
+          <motion.section 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="lg:col-span-5 bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-md"
+          >
+            <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-[#C1FF72] mb-8">Search Parameters</h2>
+            <form onSubmit={handleIdentify} className="space-y-8">
+              <div className="group relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 group-focus-within:text-[#C1FF72] transition-colors" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="e.g. mcfly@hillvalley.edu"
-                  className="w-full bg-white border border-[#141414]/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#5A5A40]/20 transition-all"
+                  placeholder="Enter Email"
+                  className="w-full bg-black/40 border border-white/10 rounded-2xl pl-12 pr-4 py-4 focus:outline-none focus:border-[#C1FF72]/50 focus:ring-1 focus:ring-[#C1FF72]/50 transition-all placeholder:text-white/20"
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium flex items-center gap-2">
-                  <Phone className="w-4 h-4 opacity-40" /> Phone Number
-                </label>
+              <div className="group relative">
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 group-focus-within:text-[#C1FF72] transition-colors" />
                 <input
                   type="text"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="e.g. 123456"
-                  className="w-full bg-white border border-[#141414]/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#5A5A40]/20 transition-all"
+                  placeholder="Enter Phone"
+                  className="w-full bg-black/40 border border-white/10 rounded-2xl pl-12 pr-4 py-4 focus:outline-none focus:border-[#C1FF72]/50 focus:ring-1 focus:ring-[#C1FF72]/50 transition-all placeholder:text-white/20"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading || (!email && !phoneNumber)}
-                className="w-full bg-[#5A5A40] text-white rounded-full py-4 font-medium hover:bg-[#4A4A30] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[#5A5A40]/10"
+                className="w-full bg-[#C1FF72] text-black rounded-2xl py-5 font-bold uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-20 shadow-[0_0_20px_rgba(193,255,114,0.3)]"
               >
-                {loading ? "Reconciling..." : "Identify Contact"}
+                {loading ? "Scanning Data..." : "Execute Reconciliation"}
               </button>
             </form>
+          </motion.section>
 
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3 text-red-700 text-sm"
-              >
-                <AlertCircle className="w-5 h-5 shrink-0" />
-                <p>{error}</p>
-              </motion.div>
-            )}
-          </section>
+          {/* Results Display */}
+          <div className="lg:col-span-7">
+            <AnimatePresence mode="wait">
+              {result ? (
+                <motion.div
+                  key="result"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="bg-gradient-to-br from-white/10 to-transparent border border-white/10 rounded-3xl p-8 relative overflow-hidden"
+                >
+                  <div className="absolute top-0 right-0 p-6 opacity-10">
+                    <History className="w-24 h-24" />
+                  </div>
 
-          {/* Result Section */}
-          <section>
-            <h2 className="text-xs uppercase tracking-widest font-semibold text-[#141414]/40 mb-6 flex items-center gap-2">
-              <History className="w-3 h-3" /> Reconciliation Result
-            </h2>
-            
-            {result ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="bg-white border border-[#141414]/10 rounded-3xl p-8 shadow-xl shadow-[#141414]/5"
-              >
-                <div className="flex items-center justify-between mb-8">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-[#F5F5F0] rounded-2xl flex items-center justify-center">
-                      <User className="w-6 h-6 text-[#5A5A40]" />
+                  <div className="flex items-center gap-6 mb-10">
+                    <div className="w-16 h-16 bg-[#C1FF72] rounded-2xl flex items-center justify-center shadow-[0_0_15px_rgba(193,255,114,0.5)]">
+                      <User className="w-8 h-8 text-black" />
                     </div>
                     <div>
-                      <p className="text-xs text-[#141414]/40 font-bold uppercase tracking-tighter">Primary ID</p>
-                      <p className="text-2xl font-serif font-medium">#{result.contact.primaryContatctId}</p>
-                    </div>
-                  </div>
-                  <div className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-[10px] font-bold uppercase tracking-wider border border-emerald-100">
-                    Consolidated
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-[#141414]/30 mb-2">Linked Emails</p>
-                    <div className="flex flex-wrap gap-2">
-                      {result.contact.emails.map((e, i) => (
-                        <span key={e} className={`px-3 py-1.5 rounded-lg text-sm ${i === 0 ? 'bg-[#5A5A40] text-white' : 'bg-[#F5F5F0] text-[#141414]/70'}`}>
-                          {e}
-                        </span>
-                      ))}
+                      <p className="text-[10px] font-black uppercase tracking-widest text-[#C1FF72]">Subject Identity</p>
+                      <h3 className="text-4xl font-mono font-bold">PID-{result.contact.primaryContatctId}</h3>
                     </div>
                   </div>
 
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-[#141414]/30 mb-2">Linked Phone Numbers</p>
-                    <div className="flex flex-wrap gap-2">
-                      {result.contact.phoneNumbers.map((p, i) => (
-                        <span key={p} className={`px-3 py-1.5 rounded-lg text-sm ${i === 0 ? 'bg-[#5A5A40] text-white' : 'bg-[#F5F5F0] text-[#141414]/70'}`}>
-                          {p}
-                        </span>
-                      ))}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                      <p className="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                        <Mail className="w-3 h-3" /> Emails
+                      </p>
+                      <div className="space-y-2">
+                        {result.contact.emails.map((e, i) => (
+                          <motion.div 
+                            initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }}
+                            key={e} className={`p-3 rounded-xl border text-xs font-mono ${i === 0 ? 'bg-[#C1FF72]/10 border-[#C1FF72]/30 text-[#C1FF72]' : 'bg-white/5 border-white/10 text-white/70'}`}>
+                            {e}
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <p className="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                        <Phone className="w-3 h-3" /> Phone Network
+                      </p>
+                      <div className="space-y-2">
+                        {result.contact.phoneNumbers.map((p, i) => (
+                          <motion.div 
+                            initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }}
+                            key={p} className={`p-3 rounded-xl border text-xs font-mono ${i === 0 ? 'bg-[#C1FF72]/10 border-[#C1FF72]/30 text-[#C1FF72]' : 'bg-white/5 border-white/10 text-white/70'}`}>
+                            {p}
+                          </motion.div>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-[#141414]/30 mb-2">Secondary IDs</p>
-                    <div className="flex flex-wrap gap-2">
-                      {result.contact.secondaryContactIds.length > 0 ? (
-                        result.contact.secondaryContactIds.map(id => (
-                          <span key={id} className="px-3 py-1.5 bg-[#F5F5F0] text-[#141414]/70 rounded-lg text-sm font-mono">
-                            #{id}
+                  {result.contact.secondaryContactIds.length > 0 && (
+                    <div className="mt-8 pt-8 border-t border-white/10">
+                      <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-4">Linked Secondary Nodes</p>
+                      <div className="flex flex-wrap gap-2">
+                        {result.contact.secondaryContactIds.map(id => (
+                          <span key={id} className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-[10px] font-mono text-white/50">
+                            <LinkIcon className="w-3 h-3" /> NODE-{id}
                           </span>
-                        ))
-                      ) : (
-                        <span className="text-sm italic text-[#141414]/40">None</span>
-                      )}
+                        ))}
+                      </div>
                     </div>
+                  )}
+                </motion.div>
+              ) : (
+                <div className="h-full min-h-[400px] border-2 border-dashed border-white/5 rounded-3xl flex flex-col items-center justify-center text-white/20 p-12 text-center">
+                  <div className="w-20 h-20 rounded-full border border-white/10 flex items-center justify-center mb-6 animate-pulse">
+                    <Search className="w-8 h-8" />
                   </div>
+                  <h3 className="text-white/60 font-bold mb-2">Awaiting Input</h3>
+                  <p className="text-xs max-w-[200px]">Provide contact details to initiate identity reconciliation.</p>
                 </div>
-              </motion.div>
-            ) : (
-              <div className="h-64 border-2 border-dashed border-[#141414]/10 rounded-3xl flex flex-col items-center justify-center text-[#141414]/30">
-                <Search className="w-8 h-8 mb-2 opacity-20" />
-                <p className="text-sm">Submit a request to see reconciliation</p>
-              </div>
-            )}
-          </section>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
-
-        <footer className="mt-24 pt-8 border-t border-[#141414]/10 text-center text-[10px] uppercase tracking-[0.2em] text-[#141414]/30">
-          Bitespeed Identity Reconciliation System &copy; 2026
-        </footer>
       </div>
     </div>
   );
