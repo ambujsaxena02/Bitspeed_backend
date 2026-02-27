@@ -2,6 +2,10 @@ import express from "express";
 import { createServer as createViteServer } from "vite";
 import Database from "better-sqlite3";
 import path from "path";
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = Number(process.env.PORT) || 8080;
@@ -25,17 +29,6 @@ db.exec(`
   )
 `);
 
-interface Contact {
-  id: number;
-  phoneNumber: string | null;
-  email: string | null;
-  linkedId: number | null;
-  linkPrecedence: "primary" | "secondary";
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-}
-
 app.post("/identify", (req, res) => {
   let { email, phoneNumber } = req.body;
   
@@ -50,7 +43,7 @@ app.post("/identify", (req, res) => {
     SELECT * FROM Contact 
     WHERE (email = ? AND email IS NOT NULL) 
        OR (phoneNumber = ? AND phoneNumber IS NOT NULL)
-  `).all(sanitizedEmail, phoneStr) as Contact[];
+  `).all(sanitizedEmail, phoneStr);
 
   if (matchingContacts.length === 0) {
     const insert = db.prepare(`
@@ -68,7 +61,7 @@ app.post("/identify", (req, res) => {
     });
   }
 
-  const primaryIds = new Set<number>();
+  const primaryIds = new Set();
   for (const contact of matchingContacts) {
     if (contact.linkPrecedence === "primary") {
       primaryIds.add(contact.id);
@@ -81,7 +74,7 @@ app.post("/identify", (req, res) => {
     SELECT id, createdAt FROM Contact 
     WHERE id IN (${Array.from(primaryIds).join(',')})
     ORDER BY createdAt ASC
-  `).all() as { id: number, createdAt: string }[];
+  `).all();
 
   const sortedPrimaryIds = potentialPrimaries.map(p => p.id);
   const mainPrimaryId = sortedPrimaryIds[0];
@@ -111,10 +104,10 @@ app.post("/identify", (req, res) => {
     SELECT * FROM Contact 
     WHERE id = ? OR linkedId = ?
     ORDER BY createdAt ASC
-  `).all(mainPrimaryId, mainPrimaryId) as Contact[];
+  `).all(mainPrimaryId, mainPrimaryId);
 
-  const emails = Array.from(new Set(allLinkedContacts.map(c => c.email).filter(Boolean))) as string[];
-  const phoneNumbers = Array.from(new Set(allLinkedContacts.map(c => c.phoneNumber).filter(Boolean))) as string[];
+  const emails = Array.from(new Set(allLinkedContacts.map(c => c.email).filter(Boolean)));
+  const phoneNumbers = Array.from(new Set(allLinkedContacts.map(c => c.phoneNumber).filter(Boolean)));
   const secondaryContactIds = allLinkedContacts
     .filter(c => c.id !== mainPrimaryId)
     .map(c => c.id);
@@ -147,7 +140,6 @@ app.post("/identify", (req, res) => {
   });
 });
 
-
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
@@ -156,11 +148,15 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
+    // Serving the production build
     app.use(express.static(path.join(__dirname, "dist")));
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(__dirname, "dist", "index.html"));
+    });
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on port ${PORT}`);
   });
 }
 
