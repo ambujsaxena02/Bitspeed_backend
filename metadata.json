@@ -1,0 +1,5 @@
+{
+  "name": "Bitespeed Identity Reconciler",
+  "description": "A backend service for reconciling customer identities across multiple contact points (email and phone) using a relational database.",
+  "requestFramePermissions": []
+}
